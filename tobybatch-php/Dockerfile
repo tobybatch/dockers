@@ -1,4 +1,4 @@
-FROM php:7.2.3-alpine3.7
+FROM php:7.2.7-fpm-alpine3.7
 # TAG: tobybatch/php
 LABEL maintainer tobias@neontribe.co.uk
 
@@ -67,8 +67,11 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         xmlwriter \
         zip \
     && rm /tmp/composer-setup.php \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "[global]" > /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo "daemonize = no" >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo "" >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo "[www]" >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo "listen = 9000" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 ENV PATH=${PATH}:/root/.composer/vendor/bin/
-ENTRYPOINT ["/bin/sh"]
-
