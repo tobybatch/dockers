@@ -30,3 +30,6 @@ Oh, and composer, 'coz who wouldn't want it?
     *  xmlwriter
     *  zip
 
+## Build
+
+    docker build --rm -t tobybatch/php .
