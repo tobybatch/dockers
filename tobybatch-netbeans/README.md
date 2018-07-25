@@ -10,13 +10,14 @@ This is based pretty much totally based on https://github.com/fgrehm/docker-netb
 
 ```sh
 docker run -d \
+    --name netbeans \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v netbeans:/root/.netbeans \
+    -v netbeans:/home/developer/.netbeans \
     -v $HOME/workspace:/home/developer/workspace \
     --memory 2048m \
-    -e UID=${id -u} \
-    -e GID=${id -g} \
+    -e UID=$(id -u) \
+    -e GID=$(id -g) \
     tobybatch/netbeans
 ```
 
@@ -28,7 +29,11 @@ docker run -d \
  * ```-v netbeans:/root/.netbeans``` Use a docker volume called netbeans to store config and plugind between sessions.
  * ```-v $HOME/workspace:/home/developer/workspace```  Mount out user workspace inthe docker.
  * ```--memory 2048m```  Some netbeans using ALL your memeory and then grinding it bits off your SSD in the form of a swap file.
- * ```-e UID=${id -u}```  Switch the UID of the docker user to match your user.
- * ```-e GID=${id -g}``` Switch the GID of the docker user to match your user. 
+ * ```-e UID=$(id -u)```  Switch the UID of the docker user to match your user.
+ * ```-e GID=$(id -g)``` Switch the GID of the docker user to match your user. 
  * ```tobybatch/netbeans``` Name of the docker.
+
+## Build
+
+    docker build -t tobybatch/netbeans . 
 

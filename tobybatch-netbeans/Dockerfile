@@ -23,14 +23,11 @@ RUN wget http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8.2-ph
     rm -rf /tmp/*
 
 RUN mkdir -p /home/developer && \
-    echo "developer:x:1000:1000:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
-    echo "developer:x:1000:" >> /etc/group && \
+    echo "developer:x:${UID}:${GID}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:${GID}:" >> /etc/group && \
     echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
     chmod 0440 /etc/sudoers.d/developer && \
     chown developer:developer -R /home/developer
 
 ADD startup.sh /usr/local/bin/startup.sh
 CMD /usr/local/bin/startup.sh
-
-# docker build -t tobybatch/netbeans . 
-# docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v netbeans:/root/.netbeans --memory 2048m tobybatch/netbeans:latest
