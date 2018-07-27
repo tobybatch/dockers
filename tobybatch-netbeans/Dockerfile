@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL maintainer Toby Batch "tobias@neontirbe.co.uk"
+LABEL maintainer Toby Batch "tobias@neontribe.co.uk"
 
 ENV UID=10001
 ENV GID=50
