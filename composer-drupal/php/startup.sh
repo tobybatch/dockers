@@ -15,9 +15,9 @@ if [ -f /tmp/archive.tgz ]; then
 
     # append our db details at the end of settings.php
     # this should override the existing seetings in the archive.
-    SETTINGS=$(find code -name settings.php)
+    SETTINGS=$(find /code -name settings.php)
 cat <<EOF>>$SETTINGS
-$databases = array (
+\$databases = array (
   'default' =>
   array (
     'default' =>
@@ -34,8 +34,12 @@ $databases = array (
 );
 
 EOF
-    # create db details
     # import db
+    drush sqlc < /tmp/*.sql
 fi
+
+# No harm doing this every time
+setfacl -dR -m u:"www-data":rwX -m u:root:rwX $(dirname $SETTINGS)/files
+setfacl -R -m u:"www-data":rwX -m u:root:rwX $(dirname $SETTINGS)/files
 
 php-fpm
