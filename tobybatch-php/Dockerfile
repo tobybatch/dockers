@@ -14,7 +14,7 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         libpng-dev \
         libpng-dev \
         libjpeg-turbo-dev \
-        mysql \
+        mysql-client \
         openldap-dev \
         sqlite \
         sqlite-dev \
@@ -65,5 +65,7 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         xmlwriter \
         zip \
     && rm /tmp/composer-setup.php
+
+RUN apk --no-cache --virtual add acl
 
 ENV PATH=${PATH}:/root/.composer/vendor/bin/
