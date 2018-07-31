@@ -35,6 +35,7 @@ wget -q -O $TARGET/.dockerignore       https://github.com/tobybatch/dockers/raw/
 wget -q -O $TARGET/php/Dockerfile      https://github.com/tobybatch/dockers/raw/develop/composer-drupal/php/Dockerfile 
 wget -q -O $TARGET/php/startup.sh      https://github.com/tobybatch/dockers/raw/develop/composer-drupal/php/startup.sh 
 set +x
+chmod 777 $TARGET/php/startup.sh
 
 read -p "Do you want to build the cluster now? [Y/n] " a
 if [ "${a^^}" == "Y" ]; then
