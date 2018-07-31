@@ -4,7 +4,7 @@ This compose bundle tears up a new site from a drush archive dump.
 
 ## Quick start
 
-Just place the archive dump in the root folder, it must be named archive.tgz.
+Just place the archive dump in the root folder, it must be named ```archive.tgz```.
 
 When the docker compose is started this archive will be unpacked in the folder code in the root folder.  The DB will be imported into the mysql db.  The SQL files persist in the folder mysql-datadir in the root folder.
 
