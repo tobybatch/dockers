@@ -49,4 +49,4 @@ This was written to take the output from ```drush ard``` which has been removed 
 You can create this using this from the directory holding the drupal:
 
     export DRUPAL_DIR_NAME=foo
-    drush -r $DRUPAL_DIR_NAME sql-dump --ordered-dump --structure-tables-key=common --result-file=../$DRUPAL_DIR_NAME.sql && tar zxvf archive.tgz $DRUPAL_DIR_NAME
+    drush -r $DRUPAL_DIR_NAME sql-dump --ordered-dump --structure-tables-key=common --result-file=../$DRUPAL_DIR_NAME.sql && tar zcf archive.tgz $DRUPAL_DIR_NAME
