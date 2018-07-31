@@ -37,3 +37,16 @@ To fully reset the bundle you can remove the persisted files:
 Then
 
     docker-compose up
+
+## Archive structure
+
+This was written to take the output from ```drush ard``` which has been removed in drush 9.  To create an archive by hand you want this structure:
+
+    |
+    +- some-dump.sql
+    +- some-folder-with-a-drupal-in-it
+
+You can create this using this from the directory holding the drupal:
+
+    export DRUPAL_DIR_NAME=foo
+    drush -r $DRUPAL_DIR_NAME sql-dump --ordered-dump --structure-tables-key=common --result-file=../$DRUPAL_DIR_NAME.sql && tar zxvf archive.tgz $DRUPAL_DIR_NAME

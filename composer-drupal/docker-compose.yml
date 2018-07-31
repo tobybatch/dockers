@@ -33,6 +33,6 @@ services:
             - ./code:/code
             - ./archive.tgz:/tmp/archive.tgz
         healthcheck:
-            test: ["CMD", "nc" ,"-z", "localhost", "9000"]
+            test: ["CMD", "nc" ,"-z", "localhost", "${DR_PORT}"]
             interval: 20s
             retries: 10
