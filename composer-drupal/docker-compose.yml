@@ -19,7 +19,8 @@ services:
         build: ./php
         links: [ db ]
         ports:
-            - "9000:9000"
+            - "${DR_PORT}:${DR_PORT}"
+            # - "9000:9000"
         depends_on:
             - db
         environment:
@@ -27,6 +28,7 @@ services:
             DBPASS: lamp
             DBNAME: lamp
             DBHOST: db
+            DR_PORT: ${DR_PORT}
         volumes:
             - ./code:/code
             - ./archive.tgz:/tmp/archive.tgz
@@ -34,17 +36,3 @@ services:
             test: ["CMD", "nc" ,"-z", "localhost", "9000"]
             interval: 20s
             retries: 10
-
-    web:
-        build: ./web
-        ports:
-            - "${DR_PORT}:${DR_PORT}"
-        environment:
-            DR_PORT: ${DR_PORT}
-        depends_on:
-            - php
-        volumes:
-            - ./code:/code
-        links:
-            - db
-            - php

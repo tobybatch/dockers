@@ -47,5 +47,6 @@ setfacl -dR -m u:"www-data":rwX -m u:root:rwX $(dirname $SETTINGS)/files
 setfacl -R -m u:"www-data":rwX -m u:root:rwX $(dirname $SETTINGS)/files
 
 
-echo "PHP FPM Ready"
-php-fpm
+echo "Drupal Ready"
+# php-fpm
+drush rs 0.0.0.0:${DR_PORT}
