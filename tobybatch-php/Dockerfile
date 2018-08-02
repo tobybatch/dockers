@@ -1,10 +1,11 @@
-FROM php:7.1.20-fpm-alpine3.7
+FROM php:7.1-alpine3.7
 # TAG: tobybatch/php
 LABEL maintainer tobias@neontribe.co.uk
 
 RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && apk --no-cache --virtual add \
+        acl \
         bash \
         curl-dev \
         freetype-dev \
@@ -18,6 +19,7 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         openldap-dev \
         sqlite \
         sqlite-dev \
+        sudo \
     && docker-php-ext-install \
         ctype \
         curl \
@@ -65,7 +67,5 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         xmlwriter \
         zip \
     && rm /tmp/composer-setup.php
-
-RUN apk --no-cache --virtual add acl
 
 ENV PATH=${PATH}:/root/.composer/vendor/bin/
