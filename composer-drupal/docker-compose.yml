@@ -12,7 +12,7 @@ services:
             - ./sql:/docker-entrypoint-initdb.d
         # restart: always
         healthcheck:
-            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            test: ["mysql", "-u", "lamp", "-plamp", "lamp", "-e", "'select count(*)'", "from", "users"]
             interval: 20s
             retries: 10
 
