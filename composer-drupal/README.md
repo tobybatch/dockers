@@ -8,18 +8,14 @@ Create a new project and use an ```drush ard``` back up to tear up a new site su
 
     export TARGET_DIR=/tmp/foo
     mkdir -p $TARGET_DIR
-    wget -O - https://github.com/tobybatch/dockers/archive/v0.0.1.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
+    wget -O - https://github.com/tobybatch/dockers/archive/v0.0.3.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
+    $TARGET_DIR/includes/install.sh archive.tgz
+    docker-compose --project-directory $TARGET_DIR build
+    docker-compose --project-directory $TARGET_DIR up
 
-    export TARGET_DIR=/tmp/foo && mkdir -p $TARGET_DIR && wget -O - https://github.com/tobybatch/dockers/archive/v0.0.1.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2 && $TARGET_DIR/includes/install.sh archive.tgz && docker-compose build -f $TARGET_DIR/docker-compose.yml
+## Using the installer
 
-Change directory into that folder, and run the installer.  You will at least need to know thw location of your archive.tgz.  Then the command with a -h to see the options ```./includes/install.sh -h``` or just pass it the archive location.
-
-    cd $TARGET_DIR
-    ./includes/install.sh archive.tgz
-
-Then build and run the docker-compose
-
-    docker-compose build && docker-compose up
+The installer used in the previous example unpacks and sets up the drupal for.  Run it with a -h to sse the options.  Basically, it unpacks the archive and locates the sql dump.  It updates the settings.php to match the db settings for the docker cluster and changes the ownership of the files.
 
 ## Stopping and starting
 
