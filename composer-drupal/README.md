@@ -4,13 +4,22 @@ This compose bundle tears up a new site from a drush archive dump.
 
 ## Quick start
 
-Just place the archive dump in the root folder, it must be named ```archive.tgz```.
+Create a new project and use an ```drush ard``` back up to tear up a new site super fast.  Just choose the location for the new project and download the files:
 
-When the docker compose is started this archive will be unpacked in the folder code in the root folder.  The DB will be imported into the mysql db.  The SQL files persist in the folder mysql-datadir in the root folder.
+    export TARGET_DIR=/tmp/foo
+    mkdir -p $TARGET_DIR
+    wget -O - https://github.com/tobybatch/dockers/archive/v0.0.1.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
 
-Then run docker compose build, docker compose up
+    export TARGET_DIR=/tmp/foo && mkdir -p $TARGET_DIR && wget -O - https://github.com/tobybatch/dockers/archive/v0.0.1.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2 && $TARGET_DIR/includes/install.sh archive.tgz && docker-compose build -f $TARGET_DIR/docker-compose.yml
 
-    docker-compose build && docker compose up
+Change directory into that folder, and run the installer.  You will at least need to know thw location of your archive.tgz.  Then the command with a -h to see the options ```./includes/install.sh -h``` or just pass it the archive location.
+
+    cd $TARGET_DIR
+    ./includes/install.sh archive.tgz
+
+Then build and run the docker-compose
+
+    docker-compose build && docker-compose up
 
 ## Stopping and starting
 

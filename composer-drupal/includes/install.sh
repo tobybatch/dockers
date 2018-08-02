@@ -54,10 +54,8 @@ function main {
     echo "Chowning files to you.  We may need your sudo password."
     sudo chown -R $(id -u):$(id -g) ${CODE_PATH}
 
-    # Locate the first index.php, this will be the site root.
-    INDEX=$(find $CODE_PATH -maxdepth 3 -name index.php)
     # Locate the settings file, currently we don't support multisites.
-    SETTINGS=$(find $CODE_PATH -name settings.php)
+    SETTINGS=$(realpath $(find $CODE_PATH -name settings.php))
 
     echo "Updating DB settings in drupal config."
     php $ROOT_DIR/includes/fixsettings.php $SETTINGS $DBNAME $DBUSER $DBPASS $DBHOST > $SETTINGS.new
