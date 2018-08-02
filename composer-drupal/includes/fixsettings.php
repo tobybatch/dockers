@@ -29,8 +29,7 @@ foreach ($keys as $key) {
 }
 echo "// ini_sets\n";
 
-$settings_file = "code/sites/default/settings.php";
-$file = file_get_contents($settings_file);
+$file = file_get_contents($argv[1]);
 # print_r(array_keys(get_defined_vars()));';
 $allline = str_replace("\n", '', $file);
 $lines = explode("\n", str_replace(';', ";\n", $allline));
