@@ -8,7 +8,7 @@ Create a new project and use an ```drush ard``` back up to tear up a new site su
 
     export TARGET_DIR=/tmp/foo
     mkdir -p $TARGET_DIR
-    wget -O - https://github.com/tobybatch/dockers/archive/v0.0.3.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
+    wget -O - https://github.com/tobybatch/dockers/archive/v0.1.0.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
     $TARGET_DIR/includes/install.sh archive.tgz
     docker-compose --project-directory $TARGET_DIR build
     docker-compose --project-directory $TARGET_DIR up
