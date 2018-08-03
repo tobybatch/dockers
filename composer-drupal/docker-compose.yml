@@ -19,6 +19,7 @@ services:
     php:
         build: .
         links: [ db ]
+        # restart: always
         ports:
             - "${DR_PORT}:${DR_PORT}"
         env_file:
