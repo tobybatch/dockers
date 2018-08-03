@@ -57,7 +57,8 @@ function main {
 
     if [ -z "$SITE_ROOT" ] || [ ! -f "$SITE_ROOT" ]; then
         D7=$(find $CODE_PATH -name index.php -exec grep -l "drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL)" {} +)
-        D8=$(find $CODE_PATH -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
+        # D8=$(find $CODE_PATH -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
+        D8=$(find $CODE_PATH -path "*vendor*" -prune -o -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
         if [ -z "$D7" ] && [ -z "$D8" ]; then
             echo -e "${COL_RED}Could not find the index file (root) of the drupla site.${COL_RESET}\nUse -r to set the root at run time.\n";
             exit 3
@@ -71,14 +72,14 @@ function main {
     elif [ ! -z "$D8" ]; then
         echo "Drupal 8 site: $D8"
         SITE_ROOT=$(dirname $D8)
-        SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} ./vendor/bin/drush ev "echo \Drupal::service('site.path');")/settings.php
+        SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} ev "echo \Drupal::service('site.path');")/settings.php
     else
         echo -e "${COL_RED}Could not determine the drupal version. Can't continue.${COL_RESET}\n";
         exit 4
     fi
 
     echo "Updating $SETTINGS_FILE."
-    php $ROOT_DIR/includes/fixsettings.php $CODE_PATH/$SETTINGS_FILE $DBNAME $DBUSER $DBPASS $DBHOST
+    php $ROOT_DIR/includes/fixsettings.php $SITE_ROOT/$SETTINGS_FILE $DBNAME $DBUSER $DBPASS $DBHOST
 }
 
 # Helper functions

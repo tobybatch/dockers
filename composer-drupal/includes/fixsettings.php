@@ -1,8 +1,10 @@
 <?php
 
 // Do this first while variable space is still clean.
+$app_root = 'foo';
+$site_path = 'bar';
 require $argv[1];
-$keys = array_diff(array_keys(get_defined_vars()), [ '_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_ENV', '_REQUEST', '_SERVER']);
+$keys = array_diff(array_keys(get_defined_vars()), [ '_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_ENV', '_REQUEST', '_SERVER', 'app_root', 'site_path']);
 
 $new_settings = [];
 $settings_file = $argv[1];
