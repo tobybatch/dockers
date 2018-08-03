@@ -1,12 +1,20 @@
 <?php
 
+$new_settings = [];
+
+$settings_file = $argv[1];
+$dbname = $argv[2];
+$dbuser = $argv[3];
+$dbpass = $argv[4];
+$dbhost = $argv[5];
+
 $mask = [
     'default' => [
         'default' => [
-            'database' => $argv[2],
-            'username' => $argv[3],
-            'password' => $argv[4],
-            'host' => $argv[5],
+            'database' => $dbname;
+            'username' => $dbuser;
+            'password' => $dbpass;
+            'host' => $dbhost;
             'port' => '',
             'driver' => 'mysql',
             'prefix' => '',
@@ -14,7 +22,7 @@ $mask = [
     ],
 ];
 
-require $argv[1];
+require $settings_file;
 if (!isset($databases)) {
     $databases = [];
 }
@@ -22,12 +30,14 @@ $databases = array_merge($databases, $mask);
 unset($mask);
 $keys = array_diff(array_keys(get_defined_vars()), [ '_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_ENV', '_REQUEST', '_SERVER']);
 
-echo "<?php\n\n// Variables\n" ;
+$new_settings[] = "<?php" ;
+$new_settings[] = "" ;
+$new_settings[] = "// Variables" ;
 
 foreach ($keys as $key) {
-    echo '$' . $key . ' = ' . var_export($$key, true) . ";\n";
+    $new_settings[] = '$' . $key . ' = ' . var_export($$key, true) . ";\n";
 }
-echo "// ini_sets\n";
+$new_settings[] = "// ini_sets\n";
 
 $file = file_get_contents($argv[1]);
 # print_r(array_keys(get_defined_vars()));';
@@ -35,6 +45,11 @@ $allline = str_replace("\n", '', $file);
 $lines = explode("\n", str_replace(';', ";\n", $allline));
 foreach ($lines as $line) {
     if (strpos($line, 'ini_set') === 0) {
-        echo $line . "\n";
+        $new_settings[] = $line;
     }
 }
+
+copy($settings_file, basename($settings_file) . '.orig.php');
+$fh = fopen($settings_file, 'w');
+fwrite($fh, implode("\n", $new_settings));
+fclose($fh);

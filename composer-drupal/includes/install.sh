@@ -54,13 +54,32 @@ function main {
     echo "Chowning files to you.  We may need your sudo password."
     sudo chown -R $(id -u):$(id -g) ${CODE_PATH}
 
-    # Locate the settings file, currently we don't support multisites.
-    SETTINGS=$(realpath $(find $CODE_PATH -name settings.php))
-
     echo "Updating DB settings in drupal config."
-    php $ROOT_DIR/includes/fixsettings.php $SETTINGS $DBNAME $DBUSER $DBPASS $DBHOST > $SETTINGS.new
-    cp $SETTINGS $SETTINGS.orig
-    mv $SETTINGS.new $SETTINGS
+    echo ./vendor/bin/drush ev "echo \Drupal::service('site.path');"
+    echo drush eval "echo conf_path();"
+
+    if [ -z "$SITE_ROOT" ] || [ ! -f "$SITE_ROOT" ]; then
+        D7=$(find . -name index.php -exec grep -l "drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL)" {} +)
+        D8=$(find . -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
+        if [ -z "$D7" ] && [ -z "$D8" ]; then
+            echo -e "${COL_RED}Could not find the index file (root) of the drupla site.${COL_RESET}\nUse -r to set the root at run time.\n";
+            exit 3
+        fi
+    fi
+
+    if [ ! -z "$D7" ]; then
+        echo "Drupal 7 site."
+        SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} eval "echo conf_path();")/settings.php
+    elif [ ! -z "$D8" ]; then
+        echo "Drupal 8 site."
+        SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} ./vendor/bin/drush ev "echo \Drupal::service('site.path');")/settings.php
+    else
+        echo -e "${COL_RED}Could not determine the drupal version. Can't continue.${COL_RESET}\n";
+        exit 4
+    fi
+    echo "Updating $SETTINGS_FILE."
+
+    php $ROOT_DIR/includes/fixsettings.php $SETTINGS_FILE $DBNAME $DBUSER $DBPASS $DBHOST
 }
 
 # Helper functions
@@ -69,11 +88,12 @@ function setupVars {
     source $ROOT_DIR/.env
 
     # Parse args
-    while getopts "fFhs" options; do
+    while getopts "fFhsr:" options; do
         case $options in
             f) FORCE=1;;
             F) CLEAR=1;;
             s) SKIPUNPACK=1;;
+            r) SITE_ROOT="$OPTARG";;
             h) usage; exit;;
         esac
     done
