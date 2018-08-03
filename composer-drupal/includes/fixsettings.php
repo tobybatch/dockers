@@ -1,8 +1,12 @@
 <?php
 
-$new_settings = [];
+// Do this first while variable space is still clean.
+require $argv[1];
+$keys = array_diff(array_keys(get_defined_vars()), [ '_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_ENV', '_REQUEST', '_SERVER']);
 
+$new_settings = [];
 $settings_file = $argv[1];
+
 $dbname = $argv[2];
 $dbuser = $argv[3];
 $dbpass = $argv[4];
@@ -11,10 +15,10 @@ $dbhost = $argv[5];
 $mask = [
     'default' => [
         'default' => [
-            'database' => $dbname;
-            'username' => $dbuser;
-            'password' => $dbpass;
-            'host' => $dbhost;
+            'database' => $dbname,
+            'username' => $dbuser,
+            'password' => $dbpass,
+            'host' => $dbhost,
             'port' => '',
             'driver' => 'mysql',
             'prefix' => '',
@@ -22,13 +26,10 @@ $mask = [
     ],
 ];
 
-require $settings_file;
 if (!isset($databases)) {
     $databases = [];
 }
 $databases = array_merge($databases, $mask);
-unset($mask);
-$keys = array_diff(array_keys(get_defined_vars()), [ '_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_ENV', '_REQUEST', '_SERVER']);
 
 $new_settings[] = "<?php" ;
 $new_settings[] = "" ;

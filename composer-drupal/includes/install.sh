@@ -13,6 +13,7 @@ alias rm=echo
 
 function main {
     checkRequirements
+    findDrush
     termColours
     setupVars "$@"
 
@@ -54,13 +55,9 @@ function main {
     echo "Chowning files to you.  We may need your sudo password."
     sudo chown -R $(id -u):$(id -g) ${CODE_PATH}
 
-    echo "Updating DB settings in drupal config."
-    echo ./vendor/bin/drush ev "echo \Drupal::service('site.path');"
-    echo drush eval "echo conf_path();"
-
     if [ -z "$SITE_ROOT" ] || [ ! -f "$SITE_ROOT" ]; then
-        D7=$(find . -name index.php -exec grep -l "drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL)" {} +)
-        D8=$(find . -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
+        D7=$(find $CODE_PATH -name index.php -exec grep -l "drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL)" {} +)
+        D8=$(find $CODE_PATH -name index.php -exec grep -l "\$kernel = new DrupalKernel('prod', \$autoloader)" {} +)
         if [ -z "$D7" ] && [ -z "$D8" ]; then
             echo -e "${COL_RED}Could not find the index file (root) of the drupla site.${COL_RESET}\nUse -r to set the root at run time.\n";
             exit 3
@@ -68,21 +65,36 @@ function main {
     fi
 
     if [ ! -z "$D7" ]; then
-        echo "Drupal 7 site."
+        echo "Drupal 7 site: $D7"
+        SITE_ROOT=$(dirname $D7)
         SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} eval "echo conf_path();")/settings.php
     elif [ ! -z "$D8" ]; then
-        echo "Drupal 8 site."
+        echo "Drupal 8 site: $D8"
+        SITE_ROOT=$(dirname $D8)
         SETTINGS_FILE=$(${DRUSH} -r ${SITE_ROOT} ./vendor/bin/drush ev "echo \Drupal::service('site.path');")/settings.php
     else
         echo -e "${COL_RED}Could not determine the drupal version. Can't continue.${COL_RESET}\n";
         exit 4
     fi
-    echo "Updating $SETTINGS_FILE."
 
-    php $ROOT_DIR/includes/fixsettings.php $SETTINGS_FILE $DBNAME $DBUSER $DBPASS $DBHOST
+    echo "Updating $SETTINGS_FILE."
+    php $ROOT_DIR/includes/fixsettings.php $CODE_PATH/$SETTINGS_FILE $DBNAME $DBUSER $DBPASS $DBHOST
 }
 
 # Helper functions
+
+function findDrush {
+    # Search the code tree for drush binary
+    DRUSH=$(find $CODE_PATH/ -name drush.php)
+    if [ -z "$DRUSH" ]; then
+        DRUSH=$(which drush)
+    fi
+
+    if [ -z "$DRUSH" ]; then
+        echo "${COL_RED}Cannot find drush.  Cannot continue.${COL_RESET}"
+        exit 5
+    fi
+}
 
 function setupVars {
     source $ROOT_DIR/.env
