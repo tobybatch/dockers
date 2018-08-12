@@ -9,30 +9,26 @@ services:
             MYSQL_RANDOM_ROOT_PASSWORD: "yes"
         volumes:
             - ./mysql-datadir:/var/lib/mysql
-        restart: always
+            - ./sql:/docker-entrypoint-initdb.d
+        # restart: always
         healthcheck:
-            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            test: ["mysql", "-u", "lamp", "-plamp", "lamp", "-e", "'select count(*)'", "from", "users"]
             interval: 20s
             retries: 10
 
     php:
-        build: ./php
+        build: .
         links: [ db ]
+        # restart: always
         ports:
             - "${DR_PORT}:${DR_PORT}"
-            # - "9000:9000"
+        env_file:
+            .env
         depends_on:
             - db
-        environment:
-            DBUSER: lamp
-            DBPASS: lamp
-            DBNAME: lamp
-            DBHOST: db
-            DR_PORT: ${DR_PORT}
         volumes:
             - ./code:/code
-            - ./archive.tgz:/tmp/archive.tgz
         healthcheck:
-            test: ["CMD", "nc" ,"-z", "localhost", "9000"]
+            test: ["CMD", "nc" ,"-z", "localhost", "${DR_PORT}"]
             interval: 20s
             retries: 10

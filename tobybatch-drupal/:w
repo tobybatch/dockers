@@ -1,0 +1,20 @@
+FROM tobybatch/php
+LABEL maintainer tobias@neontribe.co.uk
+
+ENV UID=10001
+ENV GID=50
+
+RUN mkdir -p /home/drupal && \
+    echo "drupal:x:1000:1000:drupal,,,:/home/drupal:/bin/bash" >> /etc/passwd && \
+    echo "drupal:x:1000:" >> /etc/group && \
+    echo "drupal ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/drupal && \
+    chmod 0440 /etc/sudoers.d/drupal && \
+    chown -R 1000:1000 /home/drupal
+
+USER drupal
+
+ENV PATH=/home/drupal/.composer/vendor/bin/:${PATH}
+RUN composer global require drush/drush:8
+RUN ln -s /root/.composer/vendor/bin/drush /usr/local/bin
+
+USER root

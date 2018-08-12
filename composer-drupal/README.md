@@ -4,13 +4,18 @@ This compose bundle tears up a new site from a drush archive dump.
 
 ## Quick start
 
-Just place the archive dump in the root folder, it must be named archive.tgz.
+Create a new project and use an ```drush ard``` back up to tear up a new site super fast.  Just choose the location for the new project and download the files:
 
-When the docker compose is started this archive will be unpacked in the folder code in the root folder.  The DB will be imported into the mysql db.  The SQL files persist in the folder mysql-datadir in the root folder.
+    export TARGET_DIR=/tmp/foo
+    mkdir -p $TARGET_DIR
+    wget -O - https://github.com/tobybatch/dockers/archive/v0.1.0.tar.gz | tar -C $TARGET_DIR -zxv --wildcards */composer-drupal --strip-components=2
+    $TARGET_DIR/includes/install.sh archive.tgz
+    docker-compose --project-directory $TARGET_DIR build
+    docker-compose --project-directory $TARGET_DIR up
 
-Then run docker compose build, docker compose up
+## Using the installer
 
-    docker-compose build && docker compose up
+The installer used in the previous example unpacks and sets up the drupal for.  Run it with a -h to sse the options.  Basically, it unpacks the archive and locates the sql dump.  It updates the settings.php to match the db settings for the docker cluster and changes the ownership of the files.
 
 ## Stopping and starting
 
@@ -37,3 +42,16 @@ To fully reset the bundle you can remove the persisted files:
 Then
 
     docker-compose up
+
+## Archive structure
+
+This was written to take the output from ```drush ard``` which has been removed in drush 9.  To create an archive by hand you want this structure:
+
+    |
+    +- some-dump.sql
+    +- some-folder-with-a-drupal-in-it
+
+You can create this using this from the directory holding the drupal:
+
+    export DRUPAL_DIR_NAME=foo
+    drush -r $DRUPAL_DIR_NAME sql-dump --ordered-dump --structure-tables-key=common --result-file=../$DRUPAL_DIR_NAME.sql && tar zcf archive.tgz $DRUPAL_DIR_NAME
