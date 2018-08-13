@@ -157,7 +157,10 @@ function unpack {
     echo -n "Unpacking $ARCHIVE..."
     tar -zx --strip-components=1 -C $CODE_PATH -f $ARCHIVE
     tar -zx -C $SQL_PATH -f $ARCHIVE --wildcards "*.sql"
-    find $SQL_PATH/* -type d -exec rm -rf {} +
+    SQL=$(find $SQL_PATH -type f -exec du -Sh {} + | head -n 1 | awk '{print $2}')
+    cp $SQL $ROOT_DIR/$(basename $SQL)
+    rm -rf $SQL_PATH/*
+    mv $ROOT_DIR/$(basename $SQL) $SQL_PATH/$(basename $SQL)
     echo -e " Done."
 }
 
