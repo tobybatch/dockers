@@ -1,0 +1,70 @@
+FROM php:7.2.9-apache-stretch AS composer
+MAINTAINER Toby Batch <tobias@neontribe.co.uk>
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php \
+    && php -r "unlink('composer-setup.php');" \
+    && mv composer.phar /usr/local/bin/composer
+
+FROM composer as syphp
+RUN apt update \
+    && apt install -y \
+       bash \
+       ccze \
+       git \
+       libldb-dev \
+       libldap2-dev \
+       patch \
+       unzip \
+       vim \
+       wget \
+       zip
+RUN apt install -y libicu-dev
+RUN docker-php-ext-install intl
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install ldap 
+RUN docker-php-ext-configure ldap
+
+FROM syphp as kimai
+RUN wget -O /opt/kimai.zip https://codeload.github.com/kevinpapst/kimai2/legacy.zip/master
+WORKDIR /opt/
+RUN unzip kimai.zip
+
+RUN mv kevin* kimai
+RUN rm kimai.zip
+
+RUN rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/kimai
+RUN composer require symfony/requirements-checker
+RUN composer remove symfony/requirements-checker
+
+RUN sed -i "s#/var/www/html#/opt/kimai/public#g" /etc/apache2/sites-enabled/000-default.conf
+RUN sed -i "/<\/Virt/i <Directory /opt/kimai/public>\n  Require all granted\n</Directory>" /etc/apache2/sites-enabled/000-default.conf
+
+ENV APP_ENV=prod
+ENV DATABASE_URL=$DATABASE_URL
+# ENV DATABASE_PREFIX=kamai_
+
+# RUN mkdir db
+# RUN composer install --no-dev --optimize-autoloader
+# RUN composer require symfony/web-server-bundle
+
+# RUN bin/console doctrine:database:create
+# RUN bin/console doctrine:schema:create
+# RUN bin/console doctrine:migrations:version --add --all
+# RUN bin/console cache:warmup --env=prod
+# RUN bin/console cache:warmup --env=dev
+# RUN chown -R www-data:www-data var db
+
+ENV ADMIN_USER=superadmin
+ENV ADMIN_PASS=changeme
+ENV ADMIN_MAIL=admin@example.com
+# RUN bin/console kimai:create-user $ADMIN_USER $ADMIN_MAIL ROLE_SUPER_ADMIN $ADMIN_PASS
+
+COPY dbtest.php /usr/local/bin/dbtest.php
+COPY startup.sh /usr/local/bin/startup.sh
+# CMD /usr/local/bin/startup.sh
+
+# CMD apachectl -D FOREGROUND
+ENTRYPOINT [ "/bin/bash" ]

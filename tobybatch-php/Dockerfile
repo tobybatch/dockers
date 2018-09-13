@@ -1,4 +1,4 @@
-FROM php:7.1-alpine3.7
+FROM php:7.0-alpine3.7
 # TAG: tobybatch/php
 LABEL maintainer tobias@neontribe.co.uk
 
