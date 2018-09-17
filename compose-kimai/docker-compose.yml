@@ -17,10 +17,9 @@ services:
     image: tobybatch/kimai
     build:
         context: kimai
-    env_file:
-        kimai_sample.env
     environment:
         - APP_ENV=prod
+          # - DATABASE_URL=sqlite:///opt/kimai/kimai.db
         - DATABASE_URL=mysql://kimai:kimai@db/kimai
         - DATABASE_PREFIX=k_
           # - ADMIN_USER=${ADMIN_USER}
