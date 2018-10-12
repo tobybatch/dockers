@@ -30,4 +30,5 @@ RUN mkdir -p /home/developer && \
     chown developer:developer -R /home/developer
 
 ADD startup.sh /usr/local/bin/startup.sh
+ENV FONT_SIZE 20
 CMD /usr/local/bin/startup.sh
