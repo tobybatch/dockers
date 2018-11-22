@@ -14,3 +14,5 @@
 ## Add books
 
 Just copy the books into the to add local folder and restart the docker.
+
+    docker exec calibre calibredb add /to-add/pg1013.epub --with-library http://localhost:8080
