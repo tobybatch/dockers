@@ -1,21 +1,33 @@
 FROM tobybatch/php
 LABEL maintainer tobias@neontribe.co.uk
 
-ENV UID=10001
-ENV GID=50
+WORKDIR /opt
+ARG ACCOUNT_NAME=superadmin
+ARG ACCOUNT_PASS=changeme
+ARG ACCOUNT_MAIL=drupal@example.com
 
 RUN mkdir -p /home/drupal && \
     echo "drupal:x:1000:1000:drupal,,,:/home/drupal:/bin/bash" >> /etc/passwd && \
     echo "drupal:x:1000:" >> /etc/group && \
     echo "drupal ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/drupal && \
     chmod 0440 /etc/sudoers.d/drupal && \
-    chown -R 1000:1000 /home/drupal
+    chown -R 1000:1000 /home/drupal && \
+    rm -rf /root/.composer && \
+    chown -R drupal:drupal /opt && \
+    apk --no-cache add git && \
+    composer global require drush/drush:8 && \
+    composer create-project drupal-composer/drupal-project:8.x-dev /opt/drupal --stability dev --no-interaction
 
-RUN rm -rf /root/.composer
-USER drupal
+# This is in a seperate layer as it re-builds if the ARGS change
+RUN drush site-install -y --root=/opt/drupal --db-url=sqlite://sites/default/files/.ht.sqlite --account-name=${ACCOUNT_NAME} --account-pass=${ACCOUNT_PASS} --account-mail=${ACCOUNT_MAIL} && \
+    chown -R drupal:drupal /opt/drupal
 
-RUN composer global require drush/drush:8
+# ENV UID=10001
+# ENV GID=50
 ENV PATH=/home/drupal/.composer/vendor/bin/:${PATH}
+WORKDIR /opt/drupal/web
 
-USER root
+USER drupal
+RUN composer global require drush/drush:8
 
+ENTRYPOINT drush rs 0.0.0.0:8888
