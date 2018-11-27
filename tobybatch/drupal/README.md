@@ -20,4 +20,13 @@ Set the UID 1 account details
 
 ### Persist the DB/files/modules
 
-    docker run -d -p 8888:8888 --rm --name drupal -v $(pwd)/sites-default:/opt/drupal/sites/default tobybatch/drupal
+We need to grab the set-up site files from the container.
+
+    mkdir -p sites-default && \
+    docker run \
+        -v $(pwd)/sites-default:/var/tmp/default \
+        tobybatch/drupal \
+        sudo cp -r /opt/drupal/web/sites/default /var/tmp/
+
+    docker run -d -p 8888:8888 --rm --name drupal -v $(pwd)/sites-default:/opt/drupal/web/sites/default tobybatch/drupal 
+

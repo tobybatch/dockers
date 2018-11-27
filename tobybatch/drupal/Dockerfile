@@ -30,4 +30,4 @@ WORKDIR /opt/drupal/web
 USER drupal
 RUN composer global require drush/drush:8
 
-ENTRYPOINT drush rs 0.0.0.0:8888
+CMD sudo chown -R drupal:drupal /opt/drupal/web/sites/default && drush rs 0.0.0.0:8888
