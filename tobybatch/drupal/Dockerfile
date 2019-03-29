@@ -14,7 +14,7 @@ RUN mkdir -p /home/drupal && \
     chown -R 1000:1000 /home/drupal && \
     rm -rf /root/.composer && \
     chown -R drupal:drupal /opt && \
-    apk --no-cache add git && \
+    apk --no-cache add git sudo && \
     composer global require drush/drush:8 && \
     composer create-project drupal-composer/drupal-project:8.x-dev /opt/drupal --stability dev --no-interaction
 

@@ -15,6 +15,7 @@ docker run -d \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $HOME/.netbeans:/home/developer/.netbeans \
     -v $HOME/workspace:/home/developer/workspace \
+    -v $HOME/.composer:/home/developer/.composer \
     --memory 2048m \
     -e UID=$(id -u) \
     -e GID=$(id -g) \
@@ -28,6 +29,7 @@ docker run -d \
  * ```-v /tmp/.X11-unix:/tmp/.X11-unix```  Mount the host X socket in the docker.
  * ```-v $HOME/.netbeans:/root/.netbeans``` Use a docker volume called netbeans to store config and plugind between sessions.
  * ```-v $HOME/workspace:/home/developer/workspace```  Mount out user workspace inthe docker.
+ * ```-v $HOME/.composer:/home/developer/.composer``` Mount composer files inside the container
  * ```--memory 2048m```  Some netbeans using ALL your memeory and then grinding it bits off your SSD in the form of a swap file.
  * ```-e UID=$(id -u)```  Switch the UID of the docker user to match your user.
  * ```-e GID=$(id -g)``` Switch the GID of the docker user to match your user. 

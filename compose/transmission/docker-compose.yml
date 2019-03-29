@@ -1,0 +1,34 @@
+version: '3'
+services:
+    pia:
+        image: qmcgaw/private-internet-access
+        environment:
+            USER: "${USER}"
+            PASSWORD: "${PASS}"
+            REGION: "${REGION:-Sweden}"
+            PROTOCOL: "${PROTOCOL:-udp}"
+            ENCRYPTION: "${ENCRYPTION:-strong}"
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        volumes:
+            - ./auth.conf:/auth.conf:ro
+        restart: always
+
+    transmission:
+        image: ubuntu
+        # image: linuxserver/transmission
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=Europe/London
+        volumes:
+          - ./config:/config
+          - ./downloads:/downloads
+          - ./watch:/watch
+        ports:
+          - 9091:9091
+          - 51413:51413
+          - 51413:51413/udp
+        restart: unless-stopped
