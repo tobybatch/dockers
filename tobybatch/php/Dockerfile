@@ -1,4 +1,4 @@
-FROM php:7.0-alpine3.7
+FROM php:7.1-alpine3.7
 # TAG: tobybatch/php
 LABEL maintainer tobias@neontribe.co.uk
 
@@ -67,5 +67,7 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
         xmlwriter \
         zip \
     && rm /tmp/composer-setup.php
+
+RUN apk --no-cache --virtual add acl
 
 ENV PATH=${PATH}:/root/.composer/vendor/bin/

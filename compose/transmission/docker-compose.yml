@@ -1,0 +1,33 @@
+version: '3'
+services:
+    transmission:
+        image: haugene/transmission-openvpn
+        environment:
+            OPENVPN_PROVIDER: PIA
+            OPENVPN_CONFIG: "${REGION:-Poland}"
+            OPENVPN_USERNAME: "${PIAUSER}"
+            OPENVPN_PASSWORD: "${PIAPASS}"
+            WEBPROXY_ENABLED: "true"
+            WEBPROXY_PORT: 9092
+            LOCAL_NETWORK: 192.168.51.0/16
+            PGID: "${PGID}"
+            PUID: "${PUID}"
+        cap_add:
+            - NET_ADMIN
+        volumes:
+          - $HOME/Downloads/transmission:/data
+          - /etc/localtime:/etc/localtime:ro
+        ports:
+          - 9091:9091
+          - 9092:9092
+        dns:
+          - 8.8.8.8
+          - 8.8.4.4
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        logging:
+            driver: "json-file"
+            options:
+              max-size: "200k"
+              max-file: "10"
+        restart: always
