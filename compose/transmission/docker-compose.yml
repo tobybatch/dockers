@@ -18,8 +18,8 @@ services:
           - $HOME/Downloads/transmission:/data
           - /etc/localtime:/etc/localtime:ro
         ports:
-          - 9091:9091
-          - 9092:9092
+          - 9991:9091
+          - 9992:9092
         dns:
           - 8.8.8.8
           - 8.8.4.4
