@@ -178,11 +178,23 @@ HEALTHCHECK --interval=20s --timeout=10s --retries=3 \
 FROM ${BASE}-base-${TYPE} AS base
 ARG BASE
 ARG TYPE
-WORKDIR /opt/app
+WORKDIR /opt/project
 RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone && \
     # make composer home dir
     mkdir /composer  && \
     chown -R www-data:www-data /composer
+RUN mkdir -p /opt/project/.git/hooks/
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN sed -i "s/expose_php = On/expose_php = Off/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/;opcache.enable=1/opcache.enable=1/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/;opcache.memory_consumption=128/opcache.memory_consumption=256/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/;opcache.interned_strings_buffer=8/opcache.interned_strings_buffer=24/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/;opcache.max_accelerated_files=10000/opcache.max_accelerated_files=100000/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/opcache.validate_timestamps=1/opcache.validate_timestamps=0/g" /usr/local/etc/php/php.ini
+RUN sed -i "s/session.gc_maxlifetime = 1440/session.gc_maxlifetime = 604800/g" /usr/local/etc/php/php.ini
+RUN mkdir -p /opt/project/var/logs && chmod 777 /opt/project/var/logs
+RUN sed "s/128M/-1/g" /usr/local/etc/php/php.ini-development > /opt/project/php-cli.ini
+RUN chown -R www-data:www-data /opt/project/var /usr/local/etc/php/php.ini
 
 ENV TIMEZONE=${TIMEZONE}
 ENV APP_ENV prod
