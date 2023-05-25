@@ -4,6 +4,9 @@ ARG COMPOSER_VER="latest"
 ARG BASE=fpm
 ARG TYPE=prod
 
+# composer base image
+FROM composer:${COMPOSER_VER} AS composer
+
 FROM php:${PHP_VER}-fpm-alpine AS fpm-php-ext-base
 ARG BASE
 ARG TYPE
