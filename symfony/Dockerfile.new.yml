@@ -1,0 +1,13 @@
+ARG BASE="fpm"
+ARG JS_PKG_MAN="yarn"
+ARG PDO="mysql"
+
+ARG PHP_VER="8.1"
+ARG COMPOSER_VER="latest"
+
+FROM php:${PHP_VER}-fpm-alpine AS fpm-base
+
+FROM fpm-base as yarn
+
+
+# ${JS_PKG_MAN}-${PDO}-${BASE}-base
